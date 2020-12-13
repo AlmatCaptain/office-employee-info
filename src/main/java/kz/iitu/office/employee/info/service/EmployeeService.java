@@ -4,6 +4,7 @@ package kz.iitu.office.employee.info.service;
 import kz.iitu.office.employee.info.model.Employee;
 import kz.iitu.office.employee.info.model.Role;
 import kz.iitu.office.employee.info.repository.EmployeeRepository;
+import kz.iitu.office.employee.info.repository.RolesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,10 +19,12 @@ public class EmployeeService {
     RestTemplate restTemplate;
 
     private final EmployeeRepository employeeRepository;
+    private final RolesRepository rolesRepository;
 
     @Autowired
-    public EmployeeService(EmployeeRepository employeeRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, RolesRepository rolesRepository) {
         this.employeeRepository = employeeRepository;
+        this.rolesRepository = rolesRepository;
     }
 
     public List<Employee> getListEmployee() {
@@ -29,7 +32,7 @@ public class EmployeeService {
     }
 
     public void addEmployee(Employee e) {
-        Role[] role = restTemplate.getForEntity("http://localhost:8083/roles", Role[].class).getBody();
+        List<Role> role = rolesRepository.findAll();
 
         for (Role r : role) {
             if (r.getId() == 2L) {
@@ -72,7 +75,7 @@ public class EmployeeService {
         e.setPassword(employee.getPassword());
         e.setReservedRooms(employee.getReservedRooms());
 
-        Role[] roles = restTemplate.getForEntity("http://localhost:8083/roles", Role[].class).getBody();
+        Role[] roles = restTemplate.getForEntity("http://office-acl-api:8083/roles", Role[].class).getBody();
 
         for (Role r : roles) {
             if (role.equals("ADMIN")) {
@@ -89,5 +92,10 @@ public class EmployeeService {
 
     public Employee getEmployeeByName(String name) {
         return employeeRepository.findByUsername(name);
+    }
+
+
+    public Employee getEmployeeById(Long id) {
+        return employeeRepository.findById(id).get();
     }
 }

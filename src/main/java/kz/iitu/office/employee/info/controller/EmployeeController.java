@@ -29,6 +29,11 @@ public class EmployeeController {
         return employeeService.getEmployeeByName(name);
     }
 
+    @GetMapping("/e")
+    public Employee getEmployeeById(@RequestParam Long id){
+        return employeeService.getEmployeeById(id);
+    }
+
     @PostMapping("/registration")
     public void addEmployee(@RequestBody Employee e) {
         employeeService.addEmployee(e);
